@@ -32,7 +32,6 @@ enum
 {
 	LOW = 0,
 	HIGH,
-	TOGGLE,
 };
 
 /**
@@ -72,5 +71,7 @@ void GPIO_PinInit(uint8_t pin, uint8_t state);
  * @param state  Output state: LOW (0), HIGH (1), or TOGGLE (2).
  */
 void GPIO_Write(uint8_t pin, uint8_t state);
+
+uint8_t GPIO_Read(uint8_t pin);
 
 #endif /* _HARDWARE_H_ */

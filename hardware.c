@@ -15,20 +15,21 @@
  * fecha: 21/05/2025
  * ---------------------------------------------------*/
 
-#include "../hardware/hardware.h"
+#include "hardware.h"
 
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
+#include <stdlib.h>
 
-#define _EXPORT "/sys/class/gpio/export"
+#define _EXPORT "sys/class/gpio/export"
 
 void GPIO_PinInit(uint8_t pin, uint8_t direction)
 {
 	FILE *handle_export;
 	if((handle_export = fopen(_EXPORT, "w")) == NULL)
 	{
-		printf("ERROR ACCESS TO EXPORT\n");
+		printf("ERRROR: Cannot access '%s' : %s", _EXPORT, strerror(errno));
 		return;
 	}
 	if(fprintf(handle_export, "%d", pin) < 0)
@@ -40,7 +41,7 @@ void GPIO_PinInit(uint8_t pin, uint8_t direction)
 	fclose(handle_export);
 
 	char directory[50];
-	sprintf(directory,"/sys/class/gpio/gpio%d/direction", pin);
+	sprintf(directory,"sys/class/gpio/gpio%d/direction", pin);
 
 	FILE *handle_direction;
 	if((handle_direction = fopen(directory, "w")) == NULL)
@@ -61,15 +62,47 @@ void GPIO_Write(uint8_t pin, uint8_t state)
 {
 	FILE *handle_value;
 	char directory[50];
-	sprintf(directory, "/sys/class/gpio/gpio%d/value", pin);
-	if((handle_value = fopen(directory, "w")) == NULL)
+	sprintf(directory, "sys/class/gpio/gpio%d/value", pin);
+	if(state != TOGGLE)
+	{
+		if((handle_value = fopen(directory, "w")) == NULl)
+		{
+			return;
+		}
+		
+		if(fputc((state)? '1': '0', handle_value) < 0)
+		{
+			fclose(handle_value);
+			return;
+		}
+		fclose(handle_value);
+		return;
+	}
+	if((handle_value = fopen(directory, "w+")) == NULl)
 	{
 		return;
 	}
-	if(fputc((state)? '1': '0', handle_value) < 0)
+	char preState = fgetc(handle_value);
+	if(fputc((preState == '0')? '1' : '0') < 0)
 	{
 		fclose(handle_value);
 		return;
 	}
 	fclose(handle_value);
 }
+
+uint8_t GPIO_Read(uint8_t pin)
+{
+	FILE *handle_value;
+	char directory[50];
+	sprintf(directory, "sys/class/gpio/gpio%d/value", pin);
+	if((handle_value = fopen(directory, "r")) == NULL)
+	{
+		return 0xFF;
+	}
+	
+	uint8_t state = fgetc(handle_value) - '0';
+	fclose(handle_value);
+	return state;
+}
+
