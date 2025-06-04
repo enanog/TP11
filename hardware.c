@@ -117,13 +117,14 @@ void GPIO_Write(uint8_t pin, uint8_t state)
 		return;
 	}
 
-	
+	// Try to open the GPIO value file in read mode to read the current state
 	if((handle_value = fopen(dir, "r")) == NULL)
 	{
 		printf("ERROR: Cannot open '%s': %s\n", dir, strerror(errno));
 		return;
 	}
 
+	// Read the current value of the GPIO pin
 	int preState = fgetc(handle_value);
 	if (preState == EOF)
 	{
@@ -134,6 +135,7 @@ void GPIO_Write(uint8_t pin, uint8_t state)
 	
 	fclose(handle_value);
 	
+	// Open the GPIO value file again, this time in write mode, to update the pin state
 	if((handle_value = fopen(dir, "w")) == NULL)
 	{
 		printf("ERROR: Cannot open '%s': %s\n", dir, strerror(errno));
