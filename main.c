@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <ctype.h>
 #include "hardware.h"
 
 #define D0 17
@@ -14,7 +15,7 @@
 enum
 {
 	STOP = 0,
-	RUNNIG,
+	RUNNING,
 };
 
 enum
@@ -30,7 +31,7 @@ uint8_t readMenuOption(void);
 
 int main(void)
 {
-	const uint8_t pinList = {D0, D1, D2, D3, D4, D5, D6, D7};
+	uint8_t pinList[] = {D0, D1, D2, D3, D4, D5, D6, D7};
 	for(uint8_t i = 0; i < 8; i++)
 	{
 		GPIO_PinInit(pinList[i], OUTPUT);	
@@ -45,6 +46,7 @@ int main(void)
 	while(prog)
 	{
 		menu();
+		printf("\n\n\t\t\t");
 		uint8_t aux = readMenuOption();
 		if(aux <  8)
 		{
@@ -56,21 +58,21 @@ int main(void)
 			case TOGGLE_LEDS:
 				for(uint8_t i = 0; i < 8; i++)
 				{
-					GPIO_Write(pinList[aux], TOGGLE);
+					GPIO_Write(pinList[i], TOGGLE);
 				}
 				break;
 		
 			case OFF_ALL:
 				for(uint8_t i = 0; i < 8; i++)
 				{
-					GPIO_Write(pinList[aux], LOW);
+					GPIO_Write(pinList[i], LOW);
 				}
 				break;
 				
 			case ON_ALL:
 				for(uint8_t i = 0; i < 8; i++)
 				{
-					GPIO_Write(pinList[aux], HIGH);
+					GPIO_Write(pinList[i], HIGH);
 				}
 				break;
 				
@@ -82,6 +84,7 @@ int main(void)
 				printf("\t\t\tERROR: Invalid command. Try again.\n");
 				break;
 		}
+		printf("\n\n\n\n\n\n");
 	}
 	
 	return 0;
@@ -101,7 +104,8 @@ void menu(void)
 uint8_t readMenuOption(void)
 {
 	char ch = getchar();
-	switch(ch)
+	while(getchar() != '\n');
+	switch(tolower(ch))
 	{
 		case '0':
 		case '1':

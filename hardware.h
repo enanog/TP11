@@ -35,6 +35,7 @@ enum
 	TOGGLE,
 };
 
+
 /**
  * @brief Initializes the mode (input or output) of a specific pin on a given port.
  *
@@ -48,31 +49,25 @@ enum
 void GPIO_PinInit(uint8_t pin, uint8_t state);
 
 
-///**
-// * @brief Initializes the mode (input or output) of multiple pins on a given port using a bitmask.
-// *
-// * This function allows configuring a group of pins simultaneously. It shifts the mask
-// * to the proper location based on the port and updates the direction register accordingly.
-// *
-// * @param port   Port to which the pins belong (PORTA, PORTB, PORTD).
-// * @param mask   Bitmask representing the pins to initialize.
-// * @param state  Desired mode: INPUT (0) or OUTPUT (1).
-// */
-//void GPIO_MaskInit(uint8_t port, uint16_t mask, uint8_t state);
-//
-//
 /**
- * @brief Sets the output state of a specific pin on a given port.
+ * @brief Writes a value to a GPIO pin: 0, 1, or TOGGLE.
  *
- * This function writes a logic value (HIGH/LOW) to the selected pin or toggles it
- * if TOGGLE is selected. Only works if the pin is configured as an output.
+ * If TOGGLE is passed, the current pin state is read, inverted, and written back.
  *
- * @param port   Port to which the pin belongs (PORTA, PORTB, PORTD).
- * @param pin    Pin number within the port (0–7 for PORTA and PORTB, 0–15 for PORTD).
- * @param state  Output state: LOW (0), HIGH (1), or TOGGLE (2).
+ * @param pin   GPIO pin number.
+ * @param state Value to write: 0 (LOW), 1 (HIGH), or TOGGLE.
  */
 void GPIO_Write(uint8_t pin, uint8_t state);
 
+
+/**
+ * @brief Reads the digital value from a GPIO pin.
+ *
+ * Opens the pin's value file and reads a single character ('0' or '1').
+ *
+ * @param pin GPIO pin number.
+ * @return    0, 1, or 0xFF on failure.
+ */
 uint8_t GPIO_Read(uint8_t pin);
 
 #endif /* _HARDWARE_H_ */

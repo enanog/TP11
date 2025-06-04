@@ -15,3 +15,4 @@ hardware.o: hardware.c hardware.h
 
 clear:
 	rm *.o
+	rm out
