@@ -32,6 +32,7 @@ enum
 {
 	LOW = 0,
 	HIGH,
+	TOGGLE,
 };
 
 /**
