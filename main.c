@@ -86,7 +86,11 @@ int main(void)
 		}
 		printf("\n\n\n\n\n\n");
 	}
-	
+	for(uint8_t i = 0; i < 8; i++)
+	{
+		GPIO_Unexport(i);
+	}
+
 	return 0;
 }
 

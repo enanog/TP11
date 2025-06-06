@@ -22,9 +22,11 @@
 #include <sys/types.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <unistd.h>
+
 
 #define _EXPORT "/sys/class/gpio/export"
-
+#define _UNEXPORT "/sys/class/gpio/unexport"
 void GPIO_PinInit(uint8_t pin, uint8_t direction)
 {
 	FILE *handle_export;
@@ -44,6 +46,7 @@ void GPIO_PinInit(uint8_t pin, uint8_t direction)
 		return;
 	}
 	fclose(handle_export);
+	usleep(50000);
 	
 	// Construct the path to the pin's direction file
 	char dir[50];
@@ -71,7 +74,7 @@ void GPIO_Write(uint8_t pin, uint8_t state)
 
 	// Construct the path to the pin's direction file
 	sprintf(dir, "/sys/class/gpio/gpio%d/direction", pin);
-	
+
 	// Open the direction file to verify the pin is configured as output
 	if((handle_direction = fopen(dir, "r")) == NULL)
 	{
@@ -201,5 +204,26 @@ uint8_t GPIO_Read(uint8_t pin)
 	}
 	
 	return (uint8_t)(state-'0');
+}
+
+void GPIO_Unexport(uint8_t pin)
+{
+	FILE *handle_unexport;
+
+	// Try to open the export file to make the pin available in user space
+	if((handle_unexport = fopen(_UNEXPORT, "w")) == NULL)
+	{
+		printf("ERROR: Cannot access '%s' : %s\n", _UNEXPORT, strerror(errno));
+		return;
+	}
+
+	// Export the specified GPIO pin
+	if(fprintf(handle_unexport, "%d", pin) < 0)
+	{
+		printf("ERROR: Cannot write to '%s': %s\n", _UNEXPORT, strerror(errno));
+		fclose(handle_unexport);
+		return;
+	}
+	fclose(handle_unexport);
 }
 

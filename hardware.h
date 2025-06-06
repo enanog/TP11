@@ -70,4 +70,10 @@ void GPIO_Write(uint8_t pin, uint8_t state);
  */
 uint8_t GPIO_Read(uint8_t pin);
 
+
+
+
+void GPIO_Unexport(uint8_t pin);
+
+
 #endif /* _HARDWARE_H_ */
